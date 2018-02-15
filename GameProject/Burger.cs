@@ -28,6 +28,7 @@ namespace GameProject
         // shooting support
         bool canShoot = true;
         int elapsedCooldownMilliseconds = 0;
+        ButtonState previousButtonState = ButtonState.Released;
 
         // sound effect
         SoundEffect shootSound;
@@ -76,16 +77,46 @@ namespace GameProject
         public void Update(GameTime gameTime, MouseState mouse)
         {
             // burger should only respond to input if it still has health
+            if(health > 0)
+            {
+                // move burger using mouse
+                drawRectangle.X = mouse.X - sprite.Width / 2;
+                drawRectangle.Y = mouse.Y - sprite.Height / 2;
+                // clamp burger in window
+                if (drawRectangle.Left < 0)
+                    drawRectangle.X = 0;
+                if (drawRectangle.Right > GameConstants.WindowWidth)
+                    drawRectangle.X = GameConstants.WindowWidth - drawRectangle.Width;
+                if (drawRectangle.Top < 0)
+                    drawRectangle.Y = 0;
+                if (drawRectangle.Bottom > GameConstants.WindowHeight)
+                    drawRectangle.Y = GameConstants.WindowHeight - drawRectangle.Height;
 
-            // move burger using mouse
 
-            // clamp burger in window
 
-            // update shooting allowed
-            // timer concept (for animations) introduced in Chapter 7
+                // update shooting allowed
+                if (mouse.LeftButton == ButtonState.Released && previousButtonState == ButtonState.Pressed && health > 0 && canShoot)
+                {
+                    canShoot = false;
+                    Projectile frenchFries = new Projectile(ProjectileType.FrenchFries, Game1.GetProjectileSprite(ProjectileType.FrenchFries), drawRectangle.Center.X, drawRectangle.Center.Y  - GameConstants.FrenchFriesProjectileOffset, -GameConstants.FrenchFriesProjectileSpeed);
+                    Game1.AddProjectile(frenchFries);
 
-            // shoot if appropriate
+                }
+                previousButtonState = mouse.LeftButton;
+                // timer concept (for animations) introduced in Chapter 7
 
+                // shoot if appropriate
+                if (canShoot == false)
+                {
+                    elapsedCooldownMilliseconds += gameTime.ElapsedGameTime.Milliseconds;
+                    if (GameConstants.BurgerTotalCooldownMilliseconds < elapsedCooldownMilliseconds || mouse.LeftButton == ButtonState.Released)
+                    {
+                        canShoot = true;
+                        elapsedCooldownMilliseconds = 0;
+                    }
+                    
+                }
+            }
         }
 
         /// <summary>

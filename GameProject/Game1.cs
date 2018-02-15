@@ -57,6 +57,7 @@ namespace GameProject
             // set resolution
             graphics.PreferredBackBufferWidth = GameConstants.WindowWidth;
             graphics.PreferredBackBufferHeight = GameConstants.WindowHeight;
+            IsMouseVisible = true;
         }
 
         /// <summary>
@@ -86,7 +87,8 @@ namespace GameProject
             // load sprite font
 
             // load projectile and explosion sprites
-
+            frenchFriesSprite = Content.Load<Texture2D>(@"graphics\frenchfries");
+            teddyBearProjectileSprite = Content.Load<Texture2D>(@"graphics\teddybearprojectile");
             // add initial game objects
             burger = new Burger(Content, "graphics/burger", GameConstants.WindowWidth/2, GameConstants.WindowHeight - GameConstants.WindowHeight / 8, null);
             SpawnBear();
@@ -113,7 +115,7 @@ namespace GameProject
                 Exit();
 
             // get current mouse state and update burger
-
+            burger.Update(gameTime, Mouse.GetState());
             // update other game objects
             foreach (TeddyBear bear in bears)
             {
@@ -187,7 +189,10 @@ namespace GameProject
         public static Texture2D GetProjectileSprite(ProjectileType type)
         {
             // replace with code to return correct projectile sprite based on projectile type
-            return frenchFriesSprite;
+            if (type == ProjectileType.FrenchFries)
+                return frenchFriesSprite;
+            else
+                return teddyBearProjectileSprite;
         }
 
         /// <summary>
@@ -196,7 +201,7 @@ namespace GameProject
         /// <param name="projectile">the projectile to add</param>
         public static void AddProjectile(Projectile projectile)
         {
-
+            projectiles.Add(projectile);
         }
 
         #endregion
